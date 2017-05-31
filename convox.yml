@@ -1,0 +1,6 @@
+services:
+  web:
+    certificate: ${HOST}
+    port: https:3000
+    scale:
+      count: 2
