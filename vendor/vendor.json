@@ -1,0 +1,55 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "qnx2vHj0VMj0y9szpEcBz0nsAmc=",
+			"path": "github.com/convox/praxis/api",
+			"revision": "2d0a5cfcce9de531baec7de0b372d2298fb9f88b",
+			"revisionTime": "2017-05-25T23:38:18Z"
+		},
+		{
+			"checksumSHA1": "7RFAzeBzt3g2cA81I3txHHv0LCQ=",
+			"path": "github.com/convox/praxis/cache",
+			"revision": "2d0a5cfcce9de531baec7de0b372d2298fb9f88b",
+			"revisionTime": "2017-05-25T23:38:18Z"
+		},
+		{
+			"checksumSHA1": "rWon/iSaYs7VAOYHsWDFeWyjufc=",
+			"path": "github.com/convox/praxis/logger",
+			"revision": "2d0a5cfcce9de531baec7de0b372d2298fb9f88b",
+			"revisionTime": "2017-05-25T23:38:18Z"
+		},
+		{
+			"checksumSHA1": "n0pFrnpOIqRbnJVZT27FbZEJ7Ag=",
+			"path": "github.com/convox/praxis/types",
+			"revision": "2d0a5cfcce9de531baec7de0b372d2298fb9f88b",
+			"revisionTime": "2017-05-25T23:38:18Z"
+		},
+		{
+			"checksumSHA1": "g/V4qrXjUGG9B+e3hB+4NAYJ5Gs=",
+			"path": "github.com/gorilla/context",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"revisionTime": "2016-08-17T18:46:32Z"
+		},
+		{
+			"checksumSHA1": "m+Xb6aeLpAjIjq9Utnicv+e96TQ=",
+			"path": "github.com/gorilla/mux",
+			"revision": "043ee6597c29786140136a5747b6a886364f5282",
+			"revisionTime": "2017-05-24T00:31:38Z"
+		},
+		{
+			"checksumSHA1": "rJab1YdNhQooDiBWNnt7TLWPyBU=",
+			"path": "github.com/pkg/errors",
+			"revision": "c605e284fe17294bda444b34710735b29d1a9d90",
+			"revisionTime": "2017-05-05T04:36:39Z"
+		},
+		{
+			"checksumSHA1": "7EZyXN0EmZLgGxZxK01IJua4c8o=",
+			"path": "golang.org/x/net/websocket",
+			"revision": "3da985ce5951d99de868be4385f21ea6c2b22f24",
+			"revisionTime": "2017-05-27T09:53:06Z"
+		}
+	],
+	"rootPath": "github.com/convox/releases"
+}
