@@ -32,7 +32,9 @@ func root(w http.ResponseWriter, r *http.Request, c *api.Context) error {
 }
 
 func releases(w http.ResponseWriter, r *http.Request, c *api.Context) error {
-	rs, err := githubReleases()
+	channel := c.Var("channel")
+
+	rs, err := githubReleases(channel)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -41,20 +43,22 @@ func releases(w http.ResponseWriter, r *http.Request, c *api.Context) error {
 }
 
 func next(w http.ResponseWriter, r *http.Request, c *api.Context) error {
-	rs, err := githubReleases()
+	channel := c.Var("channel")
+
+	rs, err := githubReleases(channel)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	if len(rs) < 1 {
-		return fmt.Errorf("could not list releases")
+		return fmt.Errorf("no releases for channel: %s", channel)
 	}
 
 	return c.RenderJSON(rs[0])
 }
 
-func githubReleases() ([]string, error) {
-	if v, ok := cache.Get("releases", nil).([]string); ok {
+func githubReleases(channel string) ([]string, error) {
+	if v, ok := cache.Get("releases", channel).([]string); ok {
 		return v, nil
 	}
 
@@ -70,7 +74,8 @@ func githubReleases() ([]string, error) {
 	}
 
 	var releases []struct {
-		Name string
+		Name       string
+		Prerelease bool
 	}
 
 	if err := json.Unmarshal(data, &releases); err != nil {
@@ -79,13 +84,22 @@ func githubReleases() ([]string, error) {
 
 	rs := []string{}
 
+	fmt.Printf("channel = %+v\n", channel)
+
 	for _, r := range releases {
-		rs = append(rs, r.Name)
+		switch channel {
+		case "edge":
+			rs = append(rs, r.Name)
+		case "stable":
+			if !r.Prerelease {
+				rs = append(rs, r.Name)
+			}
+		}
 	}
 
 	sort.Sort(sort.Reverse(sort.StringSlice(rs)))
 
-	if err := cache.Set("releases", nil, rs, 2*time.Minute); err != nil {
+	if err := cache.Set("releases", channel, rs, 2*time.Minute); err != nil {
 		return nil, errors.WithStack(err)
 	}
 
