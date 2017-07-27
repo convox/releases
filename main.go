@@ -12,10 +12,12 @@ import (
 	"github.com/convox/praxis/api"
 	"github.com/convox/praxis/cache"
 	"github.com/pkg/errors"
+	"github.com/segmentio/analytics-go"
 )
 
 func main() {
 	server := api.New("releases", "releases.convox")
+	server.Use(segment())
 
 	server.Route("GET", "/", root)
 	server.Route("GET", "/releases/{channel}", releases)
@@ -24,6 +26,24 @@ func main() {
 	if err := server.Listen("tcp", ":3000"); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %s\n", err)
 		os.Exit(1)
+	}
+}
+
+func segment() api.Middleware {
+	client := analytics.New("AZfqUmvVrQkwnMdAUzzCHEdqOxw4HwqH")
+	client.Verbose = false // set to true for debugging
+
+	return func(fn api.HandlerFunc) api.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request, c *api.Context) error {
+			client.Page(&analytics.Page{
+				UserId: r.RemoteAddr,
+				Traits: map[string]interface{}{
+					"path": r.URL.Path,
+				},
+			})
+
+			return fn(w, r, c)
+		}
 	}
 }
 
