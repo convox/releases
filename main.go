@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"time"
 
@@ -30,13 +31,24 @@ func main() {
 }
 
 func segment() api.Middleware {
+	// The cx client should send a user agent like:
+	// convox/$VERSION ($GOOS/$GOARCH) ($USERID)
+	agentRE := regexp.MustCompile(`convox/.* \(.*/.*\) \((.*)\)`)
+
 	client := analytics.New("AZfqUmvVrQkwnMdAUzzCHEdqOxw4HwqH")
 	client.Verbose = false // set to true for debugging
 
 	return func(fn api.HandlerFunc) api.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request, c *api.Context) error {
+
+			id := r.RemoteAddr
+
+			if m := agentRE.FindStringSubmatch(r.Header.Get("User-Agent")); m != nil {
+				id = m[1]
+			}
+
 			client.Page(&analytics.Page{
-				UserId: r.RemoteAddr,
+				UserId: id,
 				Traits: map[string]interface{}{
 					"path": r.URL.Path,
 				},
