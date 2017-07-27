@@ -6,16 +6,19 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"time"
 
 	"github.com/convox/praxis/api"
 	"github.com/convox/praxis/cache"
 	"github.com/pkg/errors"
+	"github.com/segmentio/analytics-go"
 )
 
 func main() {
 	server := api.New("releases", "releases.convox")
+	server.Use(segment())
 
 	server.Route("GET", "/", root)
 	server.Route("GET", "/releases/{channel}", releases)
@@ -24,6 +27,31 @@ func main() {
 	if err := server.Listen("tcp", ":3000"); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %s\n", err)
 		os.Exit(1)
+	}
+}
+
+func segment() api.Middleware {
+	// The cx client should send a user agent like:
+	// convox/$VERSION ($GOOS/$GOARCH) ($USERID)
+	agentRE := regexp.MustCompile(`convox/.* \(.*/.*\) \((.*)\)`)
+
+	client := analytics.New("AZfqUmvVrQkwnMdAUzzCHEdqOxw4HwqH")
+	client.Verbose = false // set to true for debugging
+
+	return func(fn api.HandlerFunc) api.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request, c *api.Context) error {
+			// only report requests with a user id
+			if m := agentRE.FindStringSubmatch(r.Header.Get("User-Agent")); m != nil {
+				client.Page(&analytics.Page{
+					UserId: m[1],
+					Traits: map[string]interface{}{
+						"path": r.URL.Path,
+					},
+				})
+			}
+
+			return fn(w, r, c)
+		}
 	}
 }
 
