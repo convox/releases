@@ -40,15 +40,10 @@ func segment() api.Middleware {
 
 	return func(fn api.HandlerFunc) api.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request, c *api.Context) error {
-			if r.URL.Path != "/" {
-				id := r.RemoteAddr
-
-				if m := agentRE.FindStringSubmatch(r.Header.Get("User-Agent")); m != nil {
-					id = m[1]
-				}
-
+			// only report requests with a user id
+			if m := agentRE.FindStringSubmatch(r.Header.Get("User-Agent")); m != nil {
 				client.Page(&analytics.Page{
-					UserId: id,
+					UserId: m[1],
 					Traits: map[string]interface{}{
 						"path": r.URL.Path,
 					},
