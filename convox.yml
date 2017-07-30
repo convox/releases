@@ -1,6 +1,8 @@
 services:
   web:
     certificate: ${HOST}
+    environment:
+      - HOST=
     port: https:3000
     scale:
       count: 2

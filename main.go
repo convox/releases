@@ -46,6 +46,7 @@ func segment() api.Middleware {
 					UserId: m[1],
 					Traits: map[string]interface{}{
 						"path": r.URL.Path,
+						"url":  fmt.Sprintf("https://%s%s", os.Getenv("HOST"), r.URL.Path),
 					},
 				})
 			}
