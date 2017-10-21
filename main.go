@@ -35,7 +35,7 @@ func segment() api.Middleware {
 	// convox/$VERSION ($GOOS/$GOARCH) ($USERID)
 	agentRE := regexp.MustCompile(`convox/.* \(.*/.*\) \((.*)\)`)
 
-	client := analytics.New("AZfqUmvVrQkwnMdAUzzCHEdqOxw4HwqH")
+	client := analytics.New("TnKNy0zogmD7nNqqU6gAiH1wu226VZe9")
 	client.Verbose = false // set to true for debugging
 
 	return func(fn api.HandlerFunc) api.HandlerFunc {
@@ -43,9 +43,11 @@ func segment() api.Middleware {
 			// only report requests with a user id
 			if m := agentRE.FindStringSubmatch(r.Header.Get("User-Agent")); m != nil {
 				client.Page(&analytics.Page{
+					Name:   r.URL.Path,
 					UserId: m[1],
 					Traits: map[string]interface{}{
 						"path": r.URL.Path,
+						"url":  fmt.Sprintf("https://%s%s", os.Getenv("HOST"), r.URL.Path),
 					},
 				})
 			}
