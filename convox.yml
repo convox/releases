@@ -1,6 +1,6 @@
 services:
   web:
-    certificate: ${HOST}
+    domain: ${HOST}
     environment:
       - HOST=
     port: https:3000
